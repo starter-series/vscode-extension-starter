@@ -33,6 +33,7 @@ jobs:
 
       - name: Check tag doesn't already exist
         run: |
+          git fetch --tags
           if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "::error::Tag v${{ steps.version.outputs.version }} already exists. Bump the version first."
             exit 1
@@ -42,12 +43,17 @@ jobs:
         run: npx vsce package --no-dependencies
 
       - name: Publish to VS Marketplace
-        run: npx vsce publish --no-dependencies
+        run: npx vsce publish --packagePath *.vsix
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: Publish to Open VSX
-        run: npx ovsx publish *.vsix
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::warning::OVSX_PAT not set, skipping Open VSX publish"
+            exit 0
+          fi
+          npx ovsx publish *.vsix
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
 

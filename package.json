@@ -10,7 +10,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
   "main": "./src/extension.js",
   "contributes": {
     "commands": [
@@ -23,10 +22,15 @@
   "scripts": {
     "lint": "eslint src/",
     "test": "jest --verbose --passWithNoTests",
-    "package": "vsce package",
+    "package": "vsce package --no-dependencies",
     "version:patch": "node scripts/bump-version.js patch",
     "version:minor": "node scripts/bump-version.js minor",
     "version:major": "node scripts/bump-version.js major"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^vscode$": "<rootDir>/test/__mocks__/vscode.js"
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

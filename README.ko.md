@@ -40,6 +40,8 @@ npm install
 │   └── commands/
 │       └── helloWorld.js         # 예제 커맨드
 ├── test/
+│   ├── __mocks__/
+│   │   └── vscode.js            # Jest용 VS Code API 모의 객체
 │   └── extension.test.js        # 구조 테스트 (Jest)
 ├── .github/
 │   ├── workflows/

@@ -4,6 +4,7 @@ test/**
 docs/**
 scripts/**
 eslint.config.js
+package-lock.json
 .gitignore
 .DS_Store
 .env

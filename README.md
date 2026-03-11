@@ -40,6 +40,8 @@ npm install
 │   └── commands/
 │       └── helloWorld.js         # Example command
 ├── test/
+│   ├── __mocks__/
+│   │   └── vscode.js            # VS Code API mock for Jest
 │   └── extension.test.js        # Structure tests (Jest)
 ├── .github/
 │   ├── workflows/
