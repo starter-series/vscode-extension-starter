@@ -45,8 +45,10 @@ jobs:
           fi
 
       - name: Validate secrets
+        env:
+          HAS_VSCE_PAT: ${{ secrets.VSCE_PAT != '' }}
         run: |
-          if [ -z "${{ secrets.VSCE_PAT }}" ]; then
+          if [ "$HAS_VSCE_PAT" != "true" ]; then
             echo "::error::Missing required secret: VSCE_PAT — See docs/MARKETPLACE_SETUP.md"
             exit 1
           fi
