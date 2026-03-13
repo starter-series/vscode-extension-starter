@@ -7,7 +7,7 @@
   "publisher": "my-publisher",
   "repository": {
     "type": "git",
-    "url": "https://github.com/heznpc/vscode-extension-starter"
+    "url": "https://github.com/starter-series/vscode-extension-starter"
   },
   "engines": {
     "node": ">=20",
