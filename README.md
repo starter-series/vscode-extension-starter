@@ -85,6 +85,14 @@ npm install
 | Test | Jest (passes with no tests by default) |
 | Package verification | Builds `.vsix` and verifies it succeeds |
 
+### Security & Maintenance
+
+| Workflow | What it does |
+|----------|-------------|
+| CodeQL (`codeql.yml`) | Static analysis for security vulnerabilities (push/PR + weekly) |
+| Maintenance (`maintenance.yml`) | Weekly CI health check — auto-creates issue on failure |
+| Stale (`stale.yml`) | Labels inactive issues/PRs after 30 days, auto-closes after 7 more |
+
 ### CD (manual trigger via Actions tab)
 
 | Step | What it does |
