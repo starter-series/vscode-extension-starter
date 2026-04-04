@@ -6,7 +6,12 @@ const { registerHelloWorld } = require('./commands/helloWorld');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  registerHelloWorld(context);
+  try {
+    registerHelloWorld(context);
+  } catch (err) {
+    vscode.window.showErrorMessage(`Extension activation failed: ${err.message}`);
+    console.error('Activation error:', err);
+  }
 }
 
 /**
