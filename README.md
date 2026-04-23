@@ -35,7 +35,7 @@ npm install
 
 # 3. Open in VS Code and press F5 to launch Extension Development Host
 
-# 4. Open Command Palette (Ctrl+Shift+P) → "Hello World"
+# 4. Open Command Palette (Ctrl+Shift+P) → "Hello World" or "Show Webview Panel"
 ```
 
 ## What's Included
@@ -43,8 +43,10 @@ npm install
 ```
 ├── src/
 │   ├── extension.js              # Main entry (activate/deactivate)
-│   └── commands/
-│       └── helloWorld.js         # Example command
+│   ├── commands/
+│   │   └── helloWorld.js         # Example command
+│   └── webview/
+│       └── panel.js              # Webview panel example (CSP + nonce + messaging)
 ├── tests/
 │   ├── __mocks__/
 │   │   └── vscode.js            # VS Code API mock for Jest
@@ -121,6 +123,38 @@ npm install
 
 See **[docs/MARKETPLACE_SETUP.md](docs/MARKETPLACE_SETUP.md)** for VS Marketplace setup.
 See **[docs/OPENVSX_SETUP.md](docs/OPENVSX_SETUP.md)** for Open VSX setup.
+
+## Webview example
+
+Open Command Palette (`Ctrl+Shift+P`) and run **My Extension: Show Webview Panel** (command id `my-extension.showWebview`). The panel demonstrates a minimal, production-ready pattern for building UI inside VS Code.
+
+**Security defaults baked in:**
+
+- `default-src 'none'` — nothing loads unless explicitly allowed
+- Per-load nonce generated with `crypto.randomBytes(16)` — inline scripts without it are blocked
+- `localResourceRoots` limited to `src/webview/` — the webview cannot read arbitrary files
+- `enableScripts: true` scoped to this panel only
+
+**Bidirectional messaging** — extension host ↔ webview:
+
+```js
+// Webview side (inline <script nonce="...">)
+const vscode = acquireVsCodeApi();
+document.getElementById('ask').addEventListener('click', () => {
+  vscode.postMessage({ type: 'getWorkspace' });
+});
+
+// Extension side (src/webview/panel.js)
+panel.webview.onDidReceiveMessage((message) => {
+  if (message.type === 'getWorkspace') {
+    panel.webview.postMessage({ type: 'workspace', data: { /* ... */ } });
+  }
+});
+```
+
+The message handler in `src/webview/panel.js` is a pure function that accepts a `postMessage` callback, so it's unit-testable without the real Webview API. See [`tests/webview.test.js`](tests/webview.test.js).
+
+Full docs: [VS Code Webview API guide](https://code.visualstudio.com/api/extension-guides/webview).
 
 ## Development
 

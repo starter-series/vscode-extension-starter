@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const { registerHelloWorld } = require('./commands/helloWorld');
+const { registerShowWebview } = require('./webview/panel');
 
 /**
  * Called when the extension is activated.
@@ -8,6 +9,7 @@ const { registerHelloWorld } = require('./commands/helloWorld');
 function activate(context) {
   try {
     registerHelloWorld(context);
+    registerShowWebview(context);
   } catch (err) {
     vscode.window.showErrorMessage(`Extension activation failed: ${err.message}`);
     console.error('Activation error:', err);

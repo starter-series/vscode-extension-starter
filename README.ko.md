@@ -35,7 +35,7 @@ npm install
 
 # 3. VS Code에서 열고 F5를 눌러 Extension Development Host 실행
 
-# 4. 명령 팔레트 (Ctrl+Shift+P) → "Hello World"
+# 4. 명령 팔레트 (Ctrl+Shift+P) → "Hello World" 또는 "Show Webview Panel"
 ```
 
 ## 포함된 구성
@@ -43,8 +43,10 @@ npm install
 ```
 ├── src/
 │   ├── extension.js              # 메인 진입점 (activate/deactivate)
-│   └── commands/
-│       └── helloWorld.js         # 예제 커맨드
+│   ├── commands/
+│   │   └── helloWorld.js         # 예제 커맨드
+│   └── webview/
+│       └── panel.js              # Webview 패널 예제 (CSP + nonce + 메시징)
 ├── tests/
 │   ├── __mocks__/
 │   │   └── vscode.js            # Jest용 VS Code API 모의 객체
@@ -121,6 +123,38 @@ npm install
 
 자세한 설정 방법은 **[docs/MARKETPLACE_SETUP.md](docs/MARKETPLACE_SETUP.md)**를 참고하세요 (VS Marketplace).
 Open VSX는 **[docs/OPENVSX_SETUP.md](docs/OPENVSX_SETUP.md)**를 참고하세요.
+
+## Webview 예제
+
+명령 팔레트(`Ctrl+Shift+P`)에서 **My Extension: Show Webview Panel** 실행 (command id `my-extension.showWebview`). VS Code 내부에 UI를 만드는 최소 프로덕션 패턴을 보여줍니다.
+
+**내장된 보안 기본값:**
+
+- `default-src 'none'` — 명시적으로 허용한 것만 로드
+- `crypto.randomBytes(16)`로 per-load nonce 생성 — nonce 없는 인라인 스크립트는 차단
+- `localResourceRoots`를 `src/webview/`로 제한 — 임의 파일 읽기 불가
+- `enableScripts: true`는 이 패널에만 적용
+
+**양방향 메시징** — extension host ↔ webview:
+
+```js
+// Webview 쪽 (nonce가 있는 inline <script>)
+const vscode = acquireVsCodeApi();
+document.getElementById('ask').addEventListener('click', () => {
+  vscode.postMessage({ type: 'getWorkspace' });
+});
+
+// Extension 쪽 (src/webview/panel.js)
+panel.webview.onDidReceiveMessage((message) => {
+  if (message.type === 'getWorkspace') {
+    panel.webview.postMessage({ type: 'workspace', data: { /* ... */ } });
+  }
+});
+```
+
+`src/webview/panel.js`의 메시지 핸들러는 `postMessage` 콜백을 인자로 받는 순수 함수라, 실제 Webview API 없이도 유닛 테스트 가능합니다. [`tests/webview.test.js`](tests/webview.test.js) 참고.
+
+공식 문서: [VS Code Webview API 가이드](https://code.visualstudio.com/api/extension-guides/webview).
 
 ## 개발
 
