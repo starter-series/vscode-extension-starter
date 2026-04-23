@@ -25,18 +25,23 @@ Build your extension. Push to publish.
 
 ## Quick Start
 
+**Via [create-starter](https://github.com/starter-series/create-starter)** (recommended):
+
 ```bash
-# 1. Click "Use this template" on GitHub (or clone)
-git clone https://github.com/starter-series/vscode-extension-starter.git my-extension
-cd my-extension
-
-# 2. Install dependencies
-npm install
-
-# 3. Open in VS Code and press F5 to launch Extension Development Host
-
-# 4. Open Command Palette (Ctrl+Shift+P) → "Hello World" or "Show Webview Panel"
+npx @starter-series/create my-vscode-extension --template vscode-extension
+cd my-vscode-extension && npm install
+# Open in VS Code and press F5 to launch Extension Development Host
 ```
+
+**Or clone directly:**
+
+```bash
+git clone https://github.com/starter-series/vscode-extension-starter my-vscode-extension
+cd my-vscode-extension && npm install
+# Open in VS Code and press F5
+```
+
+Then open Command Palette (`Ctrl+Shift+P`) → **Hello World** or **Show Webview Panel**.
 
 ## What's Included
 
