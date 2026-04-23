@@ -25,18 +25,23 @@
 
 ## 빠른 시작
 
+**[create-starter](https://github.com/starter-series/create-starter) 사용** (권장):
+
 ```bash
-# 1. GitHub에서 "Use this template" 클릭 (또는 clone)
-git clone https://github.com/starter-series/vscode-extension-starter.git my-extension
-cd my-extension
-
-# 2. 의존성 설치
-npm install
-
-# 3. VS Code에서 열고 F5를 눌러 Extension Development Host 실행
-
-# 4. 명령 팔레트 (Ctrl+Shift+P) → "Hello World" 또는 "Show Webview Panel"
+npx @starter-series/create my-vscode-extension --template vscode-extension
+cd my-vscode-extension && npm install
+# VS Code에서 열고 F5를 눌러 Extension Development Host 실행
 ```
+
+**또는 직접 clone:**
+
+```bash
+git clone https://github.com/starter-series/vscode-extension-starter my-vscode-extension
+cd my-vscode-extension && npm install
+# VS Code에서 열고 F5
+```
+
+그 다음 명령 팔레트(`Ctrl+Shift+P`)에서 **Hello World** 또는 **Show Webview Panel** 실행.
 
 ## 포함된 구성
 
