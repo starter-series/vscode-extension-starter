@@ -18,13 +18,19 @@
   ],
   "main": "./src/extension.js",
   "activationEvents": [
-    "onCommand:my-extension.helloWorld"
+    "onCommand:my-extension.helloWorld",
+    "onCommand:my-extension.showWebview"
   ],
   "contributes": {
     "commands": [
       {
         "command": "my-extension.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "my-extension.showWebview",
+        "title": "Show Webview Panel",
+        "category": "My Extension"
       }
     ]
   },

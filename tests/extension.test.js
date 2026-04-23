@@ -18,7 +18,9 @@ beforeEach(() => {
 describe('registerHelloWorld', () => {
   test('registers the command id declared in package.json', () => {
     const context = createContext();
-    const declared = pkg.contributes.commands[0].command;
+    const declared = pkg.contributes.commands.find(
+      (c) => c.command === 'my-extension.helloWorld'
+    ).command;
 
     registerHelloWorld(context);
 
@@ -54,12 +56,15 @@ describe('registerHelloWorld', () => {
 describe('activate', () => {
   test('registers the helloWorld command on activation', async () => {
     const context = createContext();
+    context.extensionUri = 'file:///fake/ext';
 
     activate(context);
 
     const registered = await vscode.commands.getCommands();
     expect(registered).toContain('my-extension.helloWorld');
-    expect(context.subscriptions).toHaveLength(1);
+    expect(registered).toContain('my-extension.showWebview');
+    // One disposable per contributed command.
+    expect(context.subscriptions).toHaveLength(2);
   });
 
   test('surfaces errors via showErrorMessage instead of throwing', () => {
