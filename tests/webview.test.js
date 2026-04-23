@@ -51,7 +51,9 @@ describe('renderHtml', () => {
     expect(html).toContain('vscode-webview://abc');
     expect(html).toContain('nonce-NONCE-A');
     // Every script tag must carry the nonce — inline scripts without it are blocked.
-    const scriptOpenTags = html.match(/<script\b[^>]*>/g) || [];
+    // Case-insensitive regex: CodeQL js/bad-tag-filter flags case-sensitive HTML regexes
+    // because HTML tag names are case-insensitive in browsers.
+    const scriptOpenTags = html.match(/<script\b[^>]*>/gi) || [];
     expect(scriptOpenTags.length).toBeGreaterThan(0);
     for (const tag of scriptOpenTags) {
       expect(tag).toContain('nonce="NONCE-A"');
