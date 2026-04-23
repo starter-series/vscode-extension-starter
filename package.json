@@ -17,6 +17,9 @@
     "Other"
   ],
   "main": "./src/extension.js",
+  "activationEvents": [
+    "onCommand:my-extension.helloWorld"
+  ],
   "contributes": {
     "commands": [
       {
