@@ -29,8 +29,9 @@
     ]
   },
   "scripts": {
-    "lint": "eslint src/",
-    "test": "jest --verbose --passWithNoTests",
+    "lint": "eslint src/ tests/",
+    "test": "jest --verbose",
+    "vscode:prepublish": "npm run lint && npm test",
     "package": "vsce package --no-dependencies",
     "version:patch": "node scripts/bump-version.js patch",
     "version:minor": "node scripts/bump-version.js minor",
