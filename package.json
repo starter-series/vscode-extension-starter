@@ -10,7 +10,7 @@
     "url": "https://github.com/starter-series/vscode-extension-starter"
   },
   "engines": {
-    "node": ">=20",
+    "node": ">=22",
     "vscode": "^1.85.0"
   },
   "categories": [
