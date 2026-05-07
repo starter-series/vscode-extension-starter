@@ -29,7 +29,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Extract version
         id: version
@@ -55,10 +55,20 @@ jobs:
           fi
 
       - name: Build .vsix
-        run: npx vsce package --no-dependencies
+        id: vsix
+        run: |
+          set -euo pipefail
+          npx vsce package --no-dependencies
+          shopt -s nullglob
+          files=( ./*.vsix )
+          if [ ${#files[@]} -ne 1 ]; then
+            echo "::error::Expected exactly 1 .vsix in cwd, found ${#files[@]}: ${files[*]}"
+            exit 1
+          fi
+          echo "path=${files[0]}" >> "$GITHUB_OUTPUT"
 
       - name: Publish to VS Marketplace
-        run: npx vsce publish --packagePath ./*.vsix
+        run: npx vsce publish --packagePath "${{ steps.vsix.outputs.path }}"
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
@@ -68,7 +78,7 @@ jobs:
             echo "::warning::OVSX_PAT not set, skipping Open VSX publish"
             exit 0
           fi
-          npx ovsx publish ./*.vsix
+          npx ovsx publish "${{ steps.vsix.outputs.path }}"
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
