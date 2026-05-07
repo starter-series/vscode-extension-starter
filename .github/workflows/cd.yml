@@ -58,7 +58,7 @@ jobs:
         run: npx vsce package --no-dependencies
 
       - name: Publish to VS Marketplace
-        run: npx vsce publish --packagePath *.vsix
+        run: npx vsce publish --packagePath ./*.vsix
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
@@ -68,7 +68,7 @@ jobs:
             echo "::warning::OVSX_PAT not set, skipping Open VSX publish"
             exit 0
           fi
-          npx ovsx publish *.vsix
+          npx ovsx publish ./*.vsix
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
 

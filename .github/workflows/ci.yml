@@ -63,7 +63,7 @@ jobs:
       - name: Package verification
         run: |
           npx vsce package --no-dependencies
-          VSIX=$(ls *.vsix)
+          VSIX=$(ls ./*.vsix | head -1)
           SIZE=$(stat -c%s "$VSIX" 2>/dev/null || stat -f%z "$VSIX")
           echo "Package: $VSIX ($((SIZE / 1024)) KB)"
           if [ "$SIZE" -gt 5242880 ]; then
