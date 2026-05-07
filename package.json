@@ -54,7 +54,12 @@
         "functions": 95,
         "lines": 95
       }
-    }
+    },
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "json-summary"
+    ]
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
