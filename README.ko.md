@@ -43,43 +43,66 @@ cd my-vscode-extension && npm install
 
 그 다음 명령 팔레트(`Ctrl+Shift+P`)에서 **Hello World** 또는 **Show Webview Panel** 실행.
 
-## 포함된 구성
+---
+
+## 현재 구현됨 (Currently implemented)
+
+아래 항목은 모두 디스크상의 코드로 뒷받침되며, Jest로 검증됩니다 (21개 테스트 통과, statement 커버리지 100%).
+
+- **Vanilla JS 확장 스캐폴드** — `src/extension.js` (activate/deactivate), `src/commands/helloWorld.js` (커맨드 예제), `src/webview/panel.js` (CSP + nonce + 양방향 메시징).
+- **CI 파이프라인** (`.github/workflows/ci.yml`) — `npm audit`, ESLint v9 flat config, Jest 커버리지 게이트, `vsce package` 빌드 검증.
+- **CD 파이프라인** (`.github/workflows/cd.yml`) — 버전 태그 가드, `vsce publish`로 VS Marketplace 배포, `ovsx publish`로 Open VSX 배포, `.vsix` 첨부된 GitHub Release, Actions 탭에서 수동 트리거.
+- **공급망 보안** — CI/CD 전반에 `npm ci --ignore-scripts` 적용, gitleaks 8.30.1을 sha256 체크섬 검증과 함께 핀, push/PR + 주간 CodeQL, npm + actions Dependabot.
+- **Webview 보안 기본값** — `default-src 'none'`, `crypto.randomBytes(16)`로 per-load nonce, `localResourceRoots`를 `src/webview/`로 제한, `enableScripts`는 패널 단위로만 활성화.
+- **버전 범퍼** — `scripts/bump-version.js`가 `npm run version:patch|minor|major`로 노출됨.
+- **유지보수 워크플로우** — 주간 CI 헬스 체크 (실패 시 이슈 자동 생성), stale 봇 (30일 라벨 → 7일 후 자동 종료).
 
 ```
 ├── src/
 │   ├── extension.js              # 메인 진입점 (activate/deactivate)
-│   ├── commands/
-│   │   └── helloWorld.js         # 예제 커맨드
-│   └── webview/
-│       └── panel.js              # Webview 패널 예제 (CSP + nonce + 메시징)
+│   ├── commands/helloWorld.js    # 예제 커맨드
+│   └── webview/panel.js          # Webview 패널 (CSP + nonce + 메시징)
 ├── tests/
-│   ├── __mocks__/
-│   │   └── vscode.js            # Jest용 VS Code API 모의 객체
-│   └── extension.test.js        # 구조 테스트 (Jest)
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yml                # 린트, 테스트, 패키지 검증
-│   │   ├── cd.yml                # VS Marketplace + Open VSX 배포
-│   │   └── setup.yml             # 첫 사용 시 자동 설정 체크리스트
-│   └── PULL_REQUEST_TEMPLATE.md
+│   ├── __mocks__/vscode.js       # Jest용 VS Code API 모의 객체
+│   ├── extension.test.js
+│   └── webview.test.js
+├── .github/workflows/
+│   ├── ci.yml                    # 린트, 테스트, 패키지 검증
+│   ├── cd.yml                    # VS Marketplace + Open VSX 배포
+│   ├── codeql.yml                # 정적 보안 분석
+│   ├── maintenance.yml           # 주간 CI 헬스 체크
+│   └── stale.yml                 # 비활성 이슈/PR 정리
 ├── docs/
-│   ├── MARKETPLACE_SETUP.md      # VS Marketplace PAT 설정 가이드
-│   └── OPENVSX_SETUP.md          # Open VSX 토큰 설정 가이드
-├── scripts/
-│   └── bump-version.js           # Semver 버전 범퍼
-└── package.json                  # 확장 매니페스트 + 스크립트
+│   ├── MARKETPLACE_SETUP.md      # VS Marketplace PAT 설정
+│   └── OPENVSX_SETUP.md          # Open VSX 토큰 설정
+└── scripts/bump-version.js       # Semver 버전 범퍼
 ```
 
-## 주요 기능
+## 계획됨 (Planned)
 
-- **Vanilla JS** — 빌드 단계 없음, TypeScript 컴파일 없음, JavaScript만
-- **CI 파이프라인** — 보안 감사, 린트, 테스트, 패키지 빌드 검증
-- **CD 파이프라인** — 원클릭 VS Marketplace + Open VSX 배포 + GitHub Release
-- **버전 관리** — `npm run version:patch/minor/major`로 `package.json` 버전 업
-- **보안** — 매 push마다 `npm audit` 실행
-- **스타터 코드** — 단일 커맨드 등록, 쉽게 확장 가능
-- **듀얼 퍼블리싱** — VS Marketplace (VS Code) + Open VSX (VS Codium, Gitpod 등)
-- **템플릿 셋업** — 첫 사용 시 설정 체크리스트 이슈 자동 생성
+- 공개 로드맵에 등록된 항목은 없습니다. 이 스타터는 스코프 범위 내에서 기능적으로 완성된 상태입니다.
+
+## 설계 의도 (Design intent)
+
+- **Vanilla JS, 빌드 단계 없음.** LLM이 JavaScript를 바로 생성합니다. TypeScript + 번들러 스택을 강제하면 모델이 확장을 테스트하기도 전에 `tsconfig.json`, `outDir`, 소스맵, 번들러 entry point까지 함께 다뤄야 합니다. 이 레이어를 없애 반복 주기를 짧게 유지합니다.
+- **VS Marketplace + Open VSX 듀얼 퍼블리싱은 옵션이 아니라 기본값.** Open VSX는 VS Codium, Gitpod, Coder 사용자가 접근 가능한 유일한 레지스트리입니다. 한 곳에만 배포하는 스타터는 그 사용자층을 조용히 배제합니다.
+- **Webview를 유닛 테스트 가능한 순수 함수로 분리.** `src/webview/panel.js`는 메시지 핸들러를 VS Code API 바인딩에서 분리해 export하므로, `Webview` 객체를 모의(mock)하지 않고도 테스트 가능합니다. 대부분의 스타터가 생략하는 패턴입니다.
+- **CI/CD는 시크릿이 없는 첫 실행을 가정.** 두 publish 단계 모두 시크릿 존재 여부에 따라 조건부 실행됩니다. 포크 직후 CD가 즉시 깨지지 않도록 설계되었습니다.
+- **보안은 체크리스트 항목이 아니라 기본값.** `--ignore-scripts`, sha256 핀 gitleaks, CodeQL, 매 push `npm audit`, nonce 기반 webview CSP 모두 박스 오픈 상태에서 활성화되어 있습니다.
+
+## 제외 대상 (Non-goals)
+
+- **TypeScript를 기본으로 강제하지 않습니다.** 필요하면 아래 [README 섹션](#typescript는)에 4단계 opt-in 방법이 있습니다. 모든 포크에 TS를 강제하면 빌드 단계 없는 철학이 무너집니다.
+- **webpack / esbuild / Rollup 없음.** 번들링이 정말 필요한 확장은 직접 추가하면 되며, 대부분은 필요하지 않습니다.
+- **`@vscode/test-electron` 없음.** Jest + `vscode` API 모의 객체로 구조/유닛 수준 테스트를 커버하며, 매 PR마다 Electron 호스트를 띄우는 비용을 부담하지 않습니다. 통합 수준 VS Code 테스트는 스타터의 스코프 바깥이며, 필요한 프로젝트가 별도로 구성할 영역입니다.
+- **마켓플레이스 리스팅 자산 없음.** 아이콘, 배너, 갤러리 스크린샷, 장문 설명은 저자의 선택이며 템플릿화하지 않습니다.
+- **텔레메트리 / 분석 / 원격 설정 없음.** 스타터가 포크에 phone-home 동작을 심으면 안 됩니다.
+
+## 비공개 (Redacted)
+
+- 해당 사항 없음.
+
+---
 
 ## CI/CD
 
@@ -89,7 +112,7 @@ cd my-vscode-extension && npm install
 |------|------|
 | 보안 감사 | `npm audit`로 의존성 취약점 확인 |
 | 린트 | ESLint v9 flat config |
-| 테스트 | Jest (기본적으로 테스트 없이도 통과) |
+| 테스트 | Jest 커버리지 게이트 |
 | 패키지 검증 | `.vsix` 빌드 성공 여부 확인 |
 
 ### 보안 & 유지보수
@@ -114,10 +137,10 @@ cd my-vscode-extension && npm install
 
 **배포 방법:**
 
-1. GitHub Secrets 설정 (아래 참조)
-2. 버전 업: `npm run version:patch` (또는 `version:minor` / `version:major`)
-3. 커밋하고 `main`에 push
-4. **Actions** 탭 → **Publish Extension** → **Run workflow**
+1. GitHub Secrets 설정 (아래 참조).
+2. 버전 업: `npm run version:patch` (또는 `version:minor` / `version:major`).
+3. 커밋하고 `main`에 push.
+4. **Actions** 탭 → **Publish Extension** → **Run workflow**.
 
 ### GitHub Secrets
 
@@ -126,8 +149,7 @@ cd my-vscode-extension && npm install
 | `VSCE_PAT` | `cd.yml` | VS Code Marketplace Personal Access Token |
 | `OVSX_PAT` | `cd.yml` | Open VSX Registry 액세스 토큰 |
 
-자세한 설정 방법은 **[docs/MARKETPLACE_SETUP.md](docs/MARKETPLACE_SETUP.md)**를 참고하세요 (VS Marketplace).
-Open VSX는 **[docs/OPENVSX_SETUP.md](docs/OPENVSX_SETUP.md)**를 참고하세요.
+자세한 설정 방법은 **[docs/MARKETPLACE_SETUP.md](docs/MARKETPLACE_SETUP.md)** (VS Marketplace)와 **[docs/OPENVSX_SETUP.md](docs/OPENVSX_SETUP.md)** (Open VSX)를 참고하세요.
 
 ## Webview 예제
 
