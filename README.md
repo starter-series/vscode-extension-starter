@@ -43,43 +43,66 @@ cd my-vscode-extension && npm install
 
 Then open Command Palette (`Ctrl+Shift+P`) → **Hello World** or **Show Webview Panel**.
 
-## What's Included
+---
+
+## Currently implemented
+
+Everything below is backed by code on disk and exercised by Jest (21 tests passing, 100% statement coverage).
+
+- **Vanilla JS extension scaffold** — `src/extension.js` (activate/deactivate), `src/commands/helloWorld.js` (command example), `src/webview/panel.js` (CSP + nonce + bidirectional messaging).
+- **CI pipeline** (`.github/workflows/ci.yml`) — `npm audit`, ESLint v9 flat config, Jest with coverage gate, `vsce package` build verification.
+- **CD pipeline** (`.github/workflows/cd.yml`) — version-tag guard, `vsce publish` to VS Marketplace, `ovsx publish` to Open VSX, GitHub Release with `.vsix` attached, manual trigger via Actions tab.
+- **Supply-chain hardening** — `npm ci --ignore-scripts` across CI/CD, pinned gitleaks 8.30.1 with sha256 checksum verification, CodeQL on push/PR + weekly, Dependabot for npm + actions.
+- **Webview security defaults** — `default-src 'none'`, per-load `crypto.randomBytes(16)` nonce, `localResourceRoots` scoped to `src/webview/`, `enableScripts` panel-local.
+- **Version bumper** — `scripts/bump-version.js` exposed as `npm run version:patch|minor|major`.
+- **Maintenance workflows** — weekly CI health check (auto-issues on failure), stale bot (30d label → 7d close).
 
 ```
 ├── src/
 │   ├── extension.js              # Main entry (activate/deactivate)
-│   ├── commands/
-│   │   └── helloWorld.js         # Example command
-│   └── webview/
-│       └── panel.js              # Webview panel example (CSP + nonce + messaging)
+│   ├── commands/helloWorld.js    # Example command
+│   └── webview/panel.js          # Webview panel (CSP + nonce + messaging)
 ├── tests/
-│   ├── __mocks__/
-│   │   └── vscode.js            # VS Code API mock for Jest
-│   └── extension.test.js        # Structure tests (Jest)
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yml                # Lint, test, package verification
-│   │   ├── cd.yml                # Publish to VS Marketplace + Open VSX
-│   │   └── setup.yml             # Auto setup checklist on first use
-│   └── PULL_REQUEST_TEMPLATE.md
+│   ├── __mocks__/vscode.js       # VS Code API mock for Jest
+│   ├── extension.test.js
+│   └── webview.test.js
+├── .github/workflows/
+│   ├── ci.yml                    # Lint, test, package verification
+│   ├── cd.yml                    # Publish to VS Marketplace + Open VSX
+│   ├── codeql.yml                # Static security analysis
+│   ├── maintenance.yml           # Weekly CI health check
+│   └── stale.yml                 # Inactive issue/PR janitor
 ├── docs/
-│   ├── MARKETPLACE_SETUP.md      # VS Marketplace PAT setup guide
-│   └── OPENVSX_SETUP.md          # Open VSX token setup guide
-├── scripts/
-│   └── bump-version.js           # Semver version bumper
-└── package.json                  # Extension manifest + scripts
+│   ├── MARKETPLACE_SETUP.md      # VS Marketplace PAT setup
+│   └── OPENVSX_SETUP.md          # Open VSX token setup
+└── scripts/bump-version.js       # Semver version bumper
 ```
 
-## Features
+## Planned
 
-- **Vanilla JS** — No build step, no TypeScript compilation, just JavaScript
-- **CI Pipeline** — Security audit, lint, test, package build verification
-- **CD Pipeline** — One-click publish to VS Marketplace + Open VSX + auto GitHub Release
-- **Version management** — `npm run version:patch/minor/major` to bump `package.json`
-- **Security** — CI runs `npm audit` on every push
-- **Starter code** — Single command registration, easy to extend
-- **Dual publishing** — VS Marketplace (VS Code) + Open VSX (VS Codium, Gitpod, etc.)
-- **Template setup** — Auto-creates setup checklist issue on first use
+- None on the public roadmap. This starter is feature-complete for its scope.
+
+## Design intent
+
+- **Vanilla JS, zero build step.** LLMs generate clean JavaScript directly; a TypeScript + bundler stack forces the model to also reason about `tsconfig.json`, `outDir`, source maps, and bundler entry points before the extension can even be tested. Removing those layers shortens the iteration loop.
+- **Dual publishing (VS Marketplace + Open VSX) baked in, not bolted on.** Open VSX is the only registry available to VS Codium, Gitpod, and Coder users. A starter that publishes to only one registry quietly excludes that audience.
+- **Webview as a unit-testable pure function.** `src/webview/panel.js` exports the message handler separately from VS Code API binding, so it can be tested without mocking the `Webview` object. This is the pattern most starters skip.
+- **CI/CD assumes the secret will be missing on first run.** Both publish steps are conditional on the secret existing — the template is safe to fork without immediately breaking CD.
+- **Security is the default, not a checklist item.** `--ignore-scripts`, sha256-pinned gitleaks, CodeQL, `npm audit` on every push, and webview CSP with nonce are all turned on out of the box.
+
+## Non-goals
+
+- **No TypeScript by default.** If you need it, the [README section below](#what-about-typescript) shows the four-step opt-in. Forcing TS on every fork would defeat the zero-build-step philosophy.
+- **No webpack / esbuild / Rollup.** Extensions that genuinely need bundling can add it; most don't.
+- **No `@vscode/test-electron`.** Jest with a `vscode` API mock covers structural and unit-level tests without the cost of spinning up an Electron host on every PR. Integration-level VS Code testing is out of scope for the starter; it belongs in projects that need it.
+- **No marketplace-listing assets.** Icon, banner, gallery screenshots, and the long-form description are author choices and should not be templated.
+- **No telemetry, no analytics, no remote config.** A starter shouldn't ship phone-home behavior to forks.
+
+## Redacted
+
+- None.
+
+---
 
 ## CI/CD
 
@@ -89,7 +112,7 @@ Then open Command Palette (`Ctrl+Shift+P`) → **Hello World** or **Show Webview
 |------|-------------|
 | Security audit | `npm audit` for dependency vulnerabilities |
 | Lint | ESLint v9 flat config |
-| Test | Jest (passes with no tests by default) |
+| Test | Jest with coverage gate |
 | Package verification | Builds `.vsix` and verifies it succeeds |
 
 ### Security & Maintenance
@@ -114,10 +137,10 @@ Then open Command Palette (`Ctrl+Shift+P`) → **Hello World** or **Show Webview
 
 **How to deploy:**
 
-1. Set up GitHub Secrets (see below)
-2. Bump version: `npm run version:patch` (or `version:minor` / `version:major`)
-3. Commit and push to `main`
-4. Go to **Actions** tab → **Publish Extension** → **Run workflow**
+1. Set up GitHub Secrets (see below).
+2. Bump version: `npm run version:patch` (or `version:minor` / `version:major`).
+3. Commit and push to `main`.
+4. Go to **Actions** → **Publish Extension** → **Run workflow**.
 
 ### GitHub Secrets
 

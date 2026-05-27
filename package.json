@@ -47,6 +47,9 @@
     "moduleNameMapper": {
       "^vscode$": "<rootDir>/tests/__mocks__/vscode.js"
     },
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
     "coverageThreshold": {
       "global": {
         "statements": 95,
