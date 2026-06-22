@@ -30,6 +30,7 @@
 ```bash
 npx @starter-series/create my-vscode-extension --template vscode-extension
 cd my-vscode-extension && npm install
+npm run build
 # VS Code에서 열고 F5를 눌러 Extension Development Host 실행
 ```
 
@@ -38,6 +39,7 @@ cd my-vscode-extension && npm install
 ```bash
 git clone https://github.com/starter-series/vscode-extension-starter my-vscode-extension
 cd my-vscode-extension && npm install
+npm run build
 # VS Code에서 열고 F5
 ```
 

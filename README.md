@@ -30,6 +30,7 @@ Build your extension. Push to publish.
 ```bash
 npx @starter-series/create my-vscode-extension --template vscode-extension
 cd my-vscode-extension && npm install
+npm run build
 # Open in VS Code and press F5 to launch Extension Development Host
 ```
 
@@ -38,6 +39,7 @@ cd my-vscode-extension && npm install
 ```bash
 git clone https://github.com/starter-series/vscode-extension-starter my-vscode-extension
 cd my-vscode-extension && npm install
+npm run build
 # Open in VS Code and press F5
 ```
 
