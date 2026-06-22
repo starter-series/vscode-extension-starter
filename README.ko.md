@@ -47,7 +47,7 @@ cd my-vscode-extension && npm install
 
 ## 현재 구현됨 (Currently implemented)
 
-아래 항목은 모두 디스크상의 코드로 뒷받침되며, Jest로 검증됩니다 (21개 테스트 통과, statement 커버리지 100%).
+아래 항목은 모두 디스크상의 코드로 뒷받침되며, Jest로 검증됩니다 (40개 테스트 통과, statement 커버리지 100%).
 
 - **Vanilla JS 확장 스캐폴드** — `src/extension.js` (activate/deactivate), `src/commands/helloWorld.js` (커맨드 예제), `src/webview/panel.js` (CSP + nonce + 양방향 메시징).
 - **CI 파이프라인** (`.github/workflows/ci.yml`) — `npm audit`, ESLint v9 flat config, Jest 커버리지 게이트, `vsce package` 빌드 검증.
@@ -64,7 +64,9 @@ cd my-vscode-extension && npm install
 │   └── webview/panel.js          # Webview 패널 (CSP + nonce + 메시징)
 ├── tests/
 │   ├── __mocks__/vscode.js       # Jest용 VS Code API 모의 객체
+│   ├── bump-version.test.js
 │   ├── extension.test.js
+│   ├── overrides-regression.test.js
 │   └── webview.test.js
 ├── .github/workflows/
 │   ├── ci.yml                    # 린트, 테스트, 패키지 검증
@@ -113,7 +115,7 @@ cd my-vscode-extension && npm install
 | 보안 감사 | `npm audit`로 의존성 취약점 확인 |
 | 린트 | ESLint v9 flat config |
 | 테스트 | Jest 커버리지 게이트 |
-| 패키지 검증 | `.vsix` 빌드 성공 여부 확인 |
+| 빌드 / 패키지 검증 | `npm run build` / `vsce package`로 `.vsix` 성공 여부 확인 |
 
 ### 보안 & 유지보수
 
@@ -194,6 +196,7 @@ npm run version:minor   # 0.1.0 → 0.2.0
 npm run version:major   # 0.1.0 → 1.0.0
 
 # .vsix 패키지 빌드
+npm run build
 npm run package
 
 # 린트 & 테스트
