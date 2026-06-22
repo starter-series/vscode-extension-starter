@@ -2,8 +2,10 @@
 .github/**
 node_modules/**
 tests/**
+coverage/**
 docs/**
 scripts/**
+*.vsix
 eslint.config.*
 .eslintrc*
 package-lock.json

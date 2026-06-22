@@ -47,7 +47,7 @@ Then open Command Palette (`Ctrl+Shift+P`) → **Hello World** or **Show Webview
 
 ## Currently implemented
 
-Everything below is backed by code on disk and exercised by Jest (21 tests passing, 100% statement coverage).
+Everything below is backed by code on disk and exercised by Jest (40 tests passing, 100% statement coverage).
 
 - **Vanilla JS extension scaffold** — `src/extension.js` (activate/deactivate), `src/commands/helloWorld.js` (command example), `src/webview/panel.js` (CSP + nonce + bidirectional messaging).
 - **CI pipeline** (`.github/workflows/ci.yml`) — `npm audit`, ESLint v9 flat config, Jest with coverage gate, `vsce package` build verification.
@@ -64,7 +64,9 @@ Everything below is backed by code on disk and exercised by Jest (21 tests passi
 │   └── webview/panel.js          # Webview panel (CSP + nonce + messaging)
 ├── tests/
 │   ├── __mocks__/vscode.js       # VS Code API mock for Jest
+│   ├── bump-version.test.js
 │   ├── extension.test.js
+│   ├── overrides-regression.test.js
 │   └── webview.test.js
 ├── .github/workflows/
 │   ├── ci.yml                    # Lint, test, package verification
@@ -113,7 +115,7 @@ Everything below is backed by code on disk and exercised by Jest (21 tests passi
 | Security audit | `npm audit` for dependency vulnerabilities |
 | Lint | ESLint v9 flat config |
 | Test | Jest with coverage gate |
-| Package verification | Builds `.vsix` and verifies it succeeds |
+| Build / package verification | Runs `npm run build` / `vsce package` and verifies `.vsix` succeeds |
 
 ### Security & Maintenance
 
@@ -195,6 +197,7 @@ npm run version:minor   # 0.1.0 → 0.2.0
 npm run version:major   # 0.1.0 → 1.0.0
 
 # Build .vsix package
+npm run build
 npm run package
 
 # Lint & test

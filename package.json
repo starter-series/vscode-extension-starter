@@ -37,6 +37,7 @@
   "scripts": {
     "lint": "eslint src/ tests/",
     "test": "jest --verbose --coverage",
+    "build": "npm run package",
     "vscode:prepublish": "npm run lint && npm test",
     "package": "vsce package --no-dependencies",
     "version:patch": "node scripts/bump-version.js patch",
