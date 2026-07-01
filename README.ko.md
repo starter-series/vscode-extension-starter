@@ -28,7 +28,7 @@
 **[create-starter](https://github.com/starter-series/create-starter) 사용** (권장):
 
 ```bash
-npx @starter-series/create my-vscode-extension --template vscode-extension
+gh repo create my-vscode-extension --template starter-series/vscode-extension-starter --clone
 cd my-vscode-extension && npm install
 npm run build
 # VS Code에서 열고 F5를 눌러 Extension Development Host 실행

@@ -28,7 +28,7 @@ Build your extension. Push to publish.
 **Via [create-starter](https://github.com/starter-series/create-starter)** (recommended):
 
 ```bash
-npx @starter-series/create my-vscode-extension --template vscode-extension
+gh repo create my-vscode-extension --template starter-series/vscode-extension-starter --clone
 cd my-vscode-extension && npm install
 npm run build
 # Open in VS Code and press F5 to launch Extension Development Host
