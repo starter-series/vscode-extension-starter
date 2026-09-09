@@ -72,3 +72,11 @@ When renaming the extension, update the command prefix in BOTH places.
 - Open VSX publish is optional (graceful skip if OVSX_PAT not set)
 - Jest uses vscode mock (`tests/__mocks__/vscode.js`) since vscode module only exists in Extension Host
 - Zero runtime dependencies
+
+## Fleet CI policy
+
+Common runtime, audit, license, secret-scan and CodeQL policy lives in
+[starter-series/.github](https://github.com/starter-series/.github).
+Keep deliverable checks in `.github/actions/validate/action.yml`.
+Weekly health and failures are aggregated in the central Fleet maintenance workflow;
+this repository retains a manual maintenance runner without issue automation.
