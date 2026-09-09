@@ -1,0 +1,23 @@
+name: Validate vscode-extension-starter
+description: Deliverable-specific checks; runtime and security policy live in starter-series/.github.
+runs:
+  using: composite
+  steps:
+  - name: Lint
+    run: npm run lint
+    shell: bash
+  - name: Test
+    run: npm test
+    shell: bash
+  - name: Package verification
+    run: |
+      npx vsce package --no-dependencies
+      VSIX=$(ls ./*.vsix | head -1)
+      SIZE=$(stat -c%s "$VSIX" 2>/dev/null || stat -f%z "$VSIX")
+      echo "Package: $VSIX ($((SIZE / 1024)) KB)"
+      if [ "$SIZE" -gt 5242880 ]; then
+        echo "::error::VSIX exceeds 5 MB ($((SIZE / 1024 / 1024)) MB) — add files to .vscodeignore"
+        exit 1
+      fi
+      rm -f "$VSIX"
+    shell: bash
