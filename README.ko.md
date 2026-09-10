@@ -248,3 +248,5 @@ PR 환영합니다. [PR 템플릿](.github/PULL_REQUEST_TEMPLATE.md)을 사용�
 ## 라이선스
 
 [MIT](LICENSE)
+
+게시 전에 name·publisher·repository와 명령·활성화 이벤트·소스의 명령 접두어를 함께 수정하고 검사하세요: `npm run template:check`.

@@ -249,3 +249,5 @@ PRs welcome. Please use the [PR template](.github/PULL_REQUEST_TEMPLATE.md).
 ## License
 
 [MIT](LICENSE)
+
+Before publishing, customize name, publisher, repository, contributed commands, activation events, and source command prefixes. Validate with `npm run template:check`.
